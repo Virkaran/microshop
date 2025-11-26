@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: orders-service
+  labels:
+    app: orders-service
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: orders-service
+  template:
+    metadata:
+      labels:
+        app: orders-service
+    spec:
+      containers:
+        - name: orders
+          image: <ACR_LOGIN_SERVER>/orders-service:<TAG>
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8081
+          readinessProbe:
+            httpGet:
+              path: /api/v1/ready
+              port: 8081
+            initialDelaySeconds: 3
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /api/v1/health
+              port: 8081
+            initialDelaySeconds: 10
+            periodSeconds: 20

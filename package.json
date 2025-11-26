@@ -1,0 +1,1 @@
+{ "private": true, "workspaces": ["services/users-service","services/orders-service","services/inventory-service"] }
