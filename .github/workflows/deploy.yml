@@ -2,7 +2,7 @@ name: Deploy Microservices
 
 on:
   push:
-    branches: ["main"]
+    branches: [ "main" ]
 
 jobs:
   build-and-deploy:
@@ -10,6 +10,7 @@ jobs:
     permissions:
       id-token: write
       contents: read
+    environment: demo
 
     env:
       REGISTRY_NAME: microshopacr
@@ -18,7 +19,7 @@ jobs:
       CLUSTER_NAME: microshop-aks
 
     steps:
-      - name: Checkout code
+      - name: Checkout
         uses: actions/checkout@v4
 
       - name: Azure Login
@@ -26,54 +27,37 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      - name: Login to ACR
+      - name: Build and Push Users
         run: |
           az acr login --name $REGISTRY_NAME
+          docker build -t $REGISTRY/users:${{ github.sha }} ./users-service
+          docker push $REGISTRY/users:${{ github.sha }}
 
-     
-      # BUILD & PUSH IMAGES
-      - name: Build & Push Users Service
+      - name: Build and Push Orders
         run: |
-          docker build -t $REGISTRY/users-service:${{ github.sha }} ./users-service
-          docker push $REGISTRY/users-service:${{ github.sha }}
+          docker build -t $REGISTRY/orders:${{ github.sha }} ./orders-service
+          docker push $REGISTRY/orders:${{ github.sha }}
 
-      - name: Build & Push Orders Service
+      - name: Build and Push Inventory
         run: |
-          docker build -t $REGISTRY/orders-service:${{ github.sha }} ./orders-service
-          docker push $REGISTRY/orders-service:${{ github.sha }}
+          docker build -t $REGISTRY/inventory:${{ github.sha }} ./inventory-service
+          docker push $REGISTRY/inventory:${{ github.sha }}
 
-      - name: Build & Push Inventory Service
-        run: |
-          docker build -t $REGISTRY/inventory-service:${{ github.sha }} ./inventory-service
-          docker push $REGISTRY/inventory-service:${{ github.sha }}
-
-      # CONNECT TO AKS
       - name: Get AKS Credentials
         run: |
-          az aks get-credentials \
-            --resource-group $RESOURCE_GROUP \
-            --name $CLUSTER_NAME \
-            --overwrite-existing
+          az aks get-credentials --resource-group $RESOURCE_GROUP --name $CLUSTER_NAME --overwrite-existing
 
-      # APPLY MANIFESTS (CREATES IF NOT EXISTS)
-      - name: Apply Kubernetes Manifests
+      - name: Deploy Users
         run: |
-          kubectl apply -f users-service/deployment.yaml
-          kubectl apply -f orders-service/deployment.yaml
-          kubectl apply -f inventory-service/deployment.yaml
+          kubectl set image deployment/users-deployment users=$REGISTRY/users:${{ github.sha }}
+          kubectl rollout status deployment/users-deployment
 
-      # UPDATE IMAGES
-      - name: Update Users Deployment
+      - name: Deploy Orders
         run: |
-          kubectl set image deployment/users-service users=$REGISTRY/users-service:${{ github.sha }}
-          kubectl rollout status deployment/users-service
+          kubectl set image deployment/orders-deployment orders=$REGISTRY/orders:${{ github.sha }}
+          kubectl rollout status deployment/orders-deployment
 
-      - name: Update Orders Deployment
+      - name: Deploy Inventory
         run: |
-          kubectl set image deployment/orders-service orders=$REGISTRY/orders-service:${{ github.sha }}
-          kubectl rollout status deployment/orders-service
-
-      - name: Update Inventory Deployment
-        run: |
-          kubectl set image deployment/inventory-service inventory=$REGISTRY/inventory-service:${{ github.sha }}
-          kubectl rollout status deployment/inventory-service
+          kubectl set image deployment/inventory-deployment inventory=$REGISTRY/inventory:${{ github.sha }}
+          kubectl rollout status deployment/inventory-deployment
