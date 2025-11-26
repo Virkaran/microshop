@@ -17,13 +17,10 @@ jobs:
     environment: demo
 
     env:
+      REGISTRY_NAME: microshopacr
       REGISTRY: microshopacr.azurecr.io
       RESOURCE_GROUP: microshop-rg
       CLUSTER_NAME: microshop-aks
-      ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
-      ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
-      ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-      ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
 
     steps:
       - name: Checkout
@@ -39,9 +36,19 @@ jobs:
 
       - name: Build and Push Users
         run: |
-          az acr login --name $REGISTRY
-          docker build -t $REGISTRY/users:${{ github.sha }} ./users
+          az acr login --name $REGISTRY_NAME
+          docker build -t $REGISTRY/users:${{ github.sha }} ./users-service
           docker push $REGISTRY/users:${{ github.sha }}
+
+      - name: Build and Push Orders
+        run: |
+          docker build -t $REGISTRY/orders:${{ github.sha }} ./orders-service
+          docker push $REGISTRY/orders:${{ github.sha }}
+
+      - name: Build and Push Inventory
+        run: |
+          docker build -t $REGISTRY/inventory:${{ github.sha }} ./inventory-service
+          docker push $REGISTRY/inventory:${{ github.sha }}
 
       - name: Get AKS Credentials
         run: |
@@ -51,3 +58,13 @@ jobs:
         run: |
           kubectl set image deployment/users-deployment users=$REGISTRY/users:${{ github.sha }}
           kubectl rollout status deployment/users-deployment
+
+      - name: Deploy Orders
+        run: |
+          kubectl set image deployment/orders-deployment orders=$REGISTRY/orders:${{ github.sha }}
+          kubectl rollout status deployment/orders-deployment
+
+      - name: Deploy Inventory
+        run: |
+          kubectl set image deployment/inventory-deployment inventory=$REGISTRY/inventory:${{ github.sha }}
+          kubectl rollout status deployment/inventory-deployment
