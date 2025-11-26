@@ -3,10 +3,6 @@ name: Deploy Microservices
 on:
   push:
     branches: [ "main" ]
-    paths:
-      - "users-service/**"
-      - "orders-service/**"
-      - "inventory-service/**"
 
 jobs:
   build-and-deploy:
