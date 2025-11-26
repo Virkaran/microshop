@@ -30,18 +30,18 @@ jobs:
       - name: Build and Push Users
         run: |
           az acr login --name $REGISTRY_NAME
-          docker build -t $REGISTRY/users:${{ github.sha }} ./users-service
-          docker push $REGISTRY/users:${{ github.sha }}
+          docker build -t $REGISTRY/users-service:${{ github.sha }} ./users-service
+          docker push $REGISTRY/users-service:${{ github.sha }}
 
       - name: Build and Push Orders
         run: |
-          docker build -t $REGISTRY/orders:${{ github.sha }} ./orders-service
-          docker push $REGISTRY/orders:${{ github.sha }}
+          docker build -t $REGISTRY/orders-service:${{ github.sha }} ./orders-service
+          docker push $REGISTRY/orders-service:${{ github.sha }}
 
       - name: Build and Push Inventory
         run: |
-          docker build -t $REGISTRY/inventory:${{ github.sha }} ./inventory-service
-          docker push $REGISTRY/inventory:${{ github.sha }}
+          docker build -t $REGISTRY/inventory-service:${{ github.sha }} ./inventory-service
+          docker push $REGISTRY/inventory-service:${{ github.sha }}
 
       - name: Get AKS Credentials
         run: |
@@ -49,15 +49,15 @@ jobs:
 
       - name: Deploy Users
         run: |
-          kubectl set image deployment/users-deployment users=$REGISTRY/users:${{ github.sha }}
-          kubectl rollout status deployment/users-deployment
+          kubectl set image deployment/users-service users=$REGISTRY/users-service:${{ github.sha }}
+          kubectl rollout status deployment/users-service
 
       - name: Deploy Orders
         run: |
-          kubectl set image deployment/orders-deployment orders=$REGISTRY/orders:${{ github.sha }}
-          kubectl rollout status deployment/orders-deployment
+          kubectl set image deployment/orders-service orders=$REGISTRY/orders-service:${{ github.sha }}
+          kubectl rollout status deployment/orders-service
 
       - name: Deploy Inventory
         run: |
-          kubectl set image deployment/inventory-deployment inventory=$REGISTRY/inventory:${{ github.sha }}
-          kubectl rollout status deployment/inventory-deployment
+          kubectl set image deployment/inventory-service inventory=$REGISTRY/inventory-service:${{ github.sha }}
+          kubectl rollout status deployment/inventory-service

@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: orders
-          image: <ACR_LOGIN_SERVER>/orders-service:<TAG>
+          image: microshopacr.azurecr.io/orders-service:<TAG>
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8081
