@@ -55,15 +55,15 @@ jobs:
 
       - name: Deploy Users
         run: |
-          kubectl set image deployment/users-deployment users=$REGISTRY/users:${{ github.sha }}
-          kubectl rollout status deployment/users-deployment
+          kubectl set image deployment/users-service users=$REGISTRY/users:${{ github.sha }}
+          kubectl rollout status deployment/users-service
 
       - name: Deploy Orders
         run: |
-          kubectl set image deployment/orders-deployment orders=$REGISTRY/orders:${{ github.sha }}
-          kubectl rollout status deployment/orders-deployment
+          kubectl set image deployment/orders-service orders=$REGISTRY/orders:${{ github.sha }}
+          kubectl rollout status deployment/orders-service
 
       - name: Deploy Inventory
         run: |
-          kubectl set image deployment/inventory-deployment inventory=$REGISTRY/inventory:${{ github.sha }}
-          kubectl rollout status deployment/inventory-deployment
+          kubectl set image deployment/inventory-service inventory=$REGISTRY/inventory:${{ github.sha }}
+          kubectl rollout status deployment/inventory-service
