@@ -10,7 +10,7 @@ spec:
   rules:
     - http:
         paths:
-          - path: /users/?(.*)
+          - path: /users
             pathType: Prefix
             backend:
               service:
@@ -18,7 +18,7 @@ spec:
                 port:
                   number: 80
 
-          - path: /orders/?(.*)
+          - path: /orders
             pathType: Prefix
             backend:
               service:
@@ -26,7 +26,7 @@ spec:
                 port:
                   number: 80
 
-          - path: /inventory/?(.*)
+          - path: /inventory
             pathType: Prefix
             backend:
               service:
