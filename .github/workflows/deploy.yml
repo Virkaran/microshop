@@ -47,6 +47,12 @@ jobs:
         run: |
           az aks get-credentials --resource-group $RESOURCE_GROUP --name $CLUSTER_NAME --overwrite-existing
 
+      - name: Apply Kubernetes Deployments
+        run: |
+          kubectl apply -f users-service/deployment.yaml
+          kubectl apply -f orders-service/deployment.yaml
+          kubectl apply -f inventory-service/deployment.yaml
+
       - name: Deploy Users
         run: |
           kubectl set image deployment/users-deployment users=$REGISTRY/users:${{ github.sha }}

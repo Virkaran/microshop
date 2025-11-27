@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: orders
-          image: microshopacr.azurecr.io/orders-service:<TAG>
+          image: microshopacr.azurecr.io/orders-service
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8081

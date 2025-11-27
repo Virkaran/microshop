@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: inventory
-          image: microshopacr.azurecr.io/inventory-service:<TAG>
+          image: microshopacr.azurecr.io/inventory-service
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8002

@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: users
-          image: microshopacr.azurecr.io/users-service:<TAG>
+          image: microshopacr.azurecr.io/users-service
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8080
