@@ -49,9 +49,9 @@ jobs:
 
       - name: Apply Kubernetes Deployments
         run: |
-          kubectl apply -f users-service/deployment.yaml
-          kubectl apply -f orders-service/deployment.yaml
-          kubectl apply -f inventory-service/deployment.yaml
+          kubectl apply -f users-service/k8s/deployment.yaml
+          kubectl apply -f orders-service/k8s/deployment.yaml
+          kubectl apply -f inventory-service/k8s/deployment.yaml
 
       - name: Deploy Users
         run: |
