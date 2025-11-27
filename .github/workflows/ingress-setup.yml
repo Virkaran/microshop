@@ -6,6 +6,7 @@ on:
 jobs:
   apply-ingress:
     runs-on: ubuntu-latest
+    environment: demo
 
     env:
       RESOURCE_GROUP: microshop-rg
