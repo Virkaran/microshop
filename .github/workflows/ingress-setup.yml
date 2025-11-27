@@ -24,6 +24,23 @@ jobs:
         run: |
           az aks get-credentials --resource-group $RESOURCE_GROUP --name $CLUSTER_NAME --overwrite-existing
 
+      - name: Add Helm Repo
+        run: |
+          helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+          helm repo update
+
+      - name: Create Namespace
+        run: |
+          kubectl get namespace ingress-basic || kubectl create namespace ingress-basic
+
+      - name: Install NGINX Ingress Controller
+        run: |
+          helm upgrade --install nginx-ingress ingress-nginx/ingress-nginx \
+            --namespace ingress-basic \
+            --set controller.replicaCount=2 \
+            --set controller.nodeSelector."kubernetes\\.io/os"=linux \
+            --set defaultBackend.nodeSelector."kubernetes\\.io/os"=linux
+
       - name: Apply Ingress
         run: |
           kubectl apply -f k8s/ingress.yaml
