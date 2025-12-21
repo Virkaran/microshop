@@ -3,7 +3,7 @@ kind: Service
 metadata:
   name: inventory-service
 spec:
-  type: ClusterIP
+  type: LoadBalancer
   selector:
     app: inventory-service
   ports:

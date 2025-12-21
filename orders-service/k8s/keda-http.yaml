@@ -1,0 +1,13 @@
+apiVersion: http.keda.sh/v1alpha1
+kind: HTTPScaledObject
+metadata:
+  name: orders-http-scaledobject
+spec:
+  scaleTargetRef:
+    name: orders-service
+    port: 8000
+  minReplicaCount: 0
+  maxReplicaCount: 10
+  targetPendingRequests: 10
+  hosts:
+    - "*"
